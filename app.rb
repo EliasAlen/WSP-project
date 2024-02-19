@@ -31,13 +31,14 @@ end
 
 post('/recipes_browse/new') do
   name = params[:name]
-  ingredient_id = params[:ingredient_id]
+  ingredients = params[:ingredients]
   difficulty = params[:difficulty]
   prep_time = params[:prep_time]
   db = SQLite3::Database.new("db/WSP-Project-vt_2024.db") 
-  db.execute("INSERT INTO recipes (name, difficulty, prep_time) VALUES (?, ?, ?)", name, difficulty, prep_time)
-
-
+  p name, difficulty, prep_time
+  db.execute("INSERT INTO recipes (name, difficulty, prep_time) VALUES (?, ?, ?)", name, difficulty, prep_time.to_i)
+  ingredient_ids = get_ingredient_ids(ingredients)
+  insert_ingredients_to_recipe(ingredient_ids, name)
   redirect('/recipes_browse')
 end
 
