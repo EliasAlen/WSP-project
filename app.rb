@@ -61,8 +61,8 @@ get('/recipes_browse/:id') do
   id = params[:id].to_i
   db = SQLite3::Database.new("db/WSP-Project-vt_2024.db")
   db.results_as_hash = true
-  result = db.execute("SELECT * FROM albums WHERE AlbumId = ?",id).first
-  result2 = db.execute("SELECT Name FROM artists WHERE ArtistId IN (SELECT ArtistId FROM albums WHERE AlbumId = ?)",id).first
-  p result2
-  slim(:"recipes_browse/show",locals:{result:result,result2:result2})
+  @result = db.execute("SELECT * FROM recipes WHERE id = ?",id).first
+  # result2 = db.execute("SELECT  FROM artists WHERE ArtistId IN (SELECT ArtistId FROM albums WHERE AlbumId = ?)",id).first
+  # p result2
+  slim(:"recipes_browse/show")
 end

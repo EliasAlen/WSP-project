@@ -4,7 +4,7 @@ a href="/recipes_browse/new" Add recipe
 ol
   - @result.each do |recipe|
     li 
-      a href="recipes_browse/#{recipe['AlbumId']}" #{recipe["Title"]}
-      a href="recipes_browse/#{recipe['AlbumId']}/edit" Update
+      a href="recipes_browse/#{recipe['id']}" #{recipe["name"]}
+      / a href="recipes_browse/#{recipe['id']}/edit" Update
       form method='POST' action='recipes_browse/#{recipe['AlbumId']}/delete'
         input type='submit' value='Delete'
