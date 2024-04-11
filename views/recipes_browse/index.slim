@@ -4,7 +4,22 @@ a href="/recipes_browse/new" Add recipe
 ol
   - @result.each do |recipe|
     li 
-      a href="recipes_browse/#{recipe['id']}" #{recipe["name"]}
-      / a href="recipes_browse/#{recipe['id']}/edit" Update
-      form method='POST' action='recipes_browse/#{recipe['AlbumId']}/delete'
-        input type='submit' value='Delete'
+      a href="/recipes_browse/recipe/#{recipe['id']}" #{recipe["name"]}
+      - if session[:id] != nil
+        -if !is_saved(@user_info["id"], recipe["id"])
+          form action='/recipes_browse/recipe/#{recipe['id']}/save' method='post'
+            input type='submit' value='Save'
+        - else
+          form action='/recipes_browse/recipe/#{recipe['id']}/remove' method='post'
+            input type='submit' value='Remove from saved'
+        - if @is_admin == true || is_creator(@user_info["id"], recipe["id"])
+          a href="/recipes_browse/recipe/#{recipe['id']}/edit" Edit
+          form action='/recipes_browse/recipe/#{recipe['id']}/delete' method='post'
+            input type='submit' value='Delete'
+
+form action='/recipes_browse' method='post'
+    input type="text" name='ingredient' placeholder='Must contain' value='#{@ingredients}'
+    input type="submit" value='Add'
+
+form action='/recipes_browse/reset_filter' method='post'
+    input type="submit" value='Reset'

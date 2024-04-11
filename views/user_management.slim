@@ -1,0 +1,4 @@
+- @result.each do |user|
+      p = user["username"]
+      form action='/admin/manage_users/#{user["id"]}/delete' method='post'
+            input type='submit' value='Delete'

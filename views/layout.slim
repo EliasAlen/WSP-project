@@ -4,12 +4,19 @@ html lang="en"
     meta charset="UTF-8"/
     meta name="viewport" content="width=device-width, initial-scale=1.0"/
     meta http-equiv="X-UA-Compatible" content="ie=edge"/
-    link rel="stylesheet" href="/css/style.css"/
+    link rel="stylesheet" href="css/style.css"/
     title Document
   body
 
     nav
-      a href="/" Start it
+      a href="/" Home 
       a href="/recipes_browse" Recipe search
+      - if session[:id] == nil
+        a href="/login" Login 
+      - else 
+        a href="/user/saved_recipes" Your recipes
+        form action='/log_out' method='post'
+          input type='submit' value='Log Out'
+      - if @is_admin == true
+        a href="/admin/manage_users" Manage users
     ==yield
-  
