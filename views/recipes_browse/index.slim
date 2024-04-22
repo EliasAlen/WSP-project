@@ -10,7 +10,7 @@ ol
           form action='/recipes_browse/recipe/#{recipe['id']}/save' method='post'
             input type='submit' value='Save'
         - else
-          form action='/recipes_browse/recipe/#{recipe['id']}/remove' method='post'
+          form action='/recipes_browse/recipe/#{recipe['id']}/saved/delete' method='post'
             input type='submit' value='Remove from saved'
         - if @is_admin == true || is_creator(@user_info["id"], recipe["id"])
           a href="/recipes_browse/recipe/#{recipe['id']}/edit" Edit

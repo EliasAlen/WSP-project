@@ -100,7 +100,7 @@ end
 #
 #@params [integer] user_id, id för användare som är inloggad
 #@params [integer] recipe_id, receptets id
-post('/recipes_browse/recipe/:id/remove') do
+post('/recipes_browse/recipe/:id/saved/delete') do
   id = params[:id].to_i
   if session[:id] != nil
     remove_recipe(session[:id], id)
@@ -116,15 +116,19 @@ end
 #@params [string] ingredients, ingredienserna som receptet innehåller och i vilken mängd
 #@params [string] difficulty, svårhetsgrad av receptet
 #@params [integer] prep_time, hur lång tid receptet tar att tillaga i minuter
-post('/recipes_browse/new') do
+post('/recipes_browse/create') do
   if session[:id] != nil
     name = params[:name]
     ingredients = params[:ingredients]
     difficulty = params[:difficulty]
     prep_time = params[:prep_time]
-    create_recipe(session[:id], name, difficulty, prep_time)
-    save_ingredient_info(ingredients, name)
-    redirect('/recipes_browse')
+    if create_recipe(session[:id], name, difficulty, prep_time) == nil || !correct_ingredient_format()
+      slim(:error)
+    else
+      create_recipe(session[:id], name, difficulty, prep_time)
+      save_ingredient_info(ingredients, name)
+      redirect('/recipes_browse')
+    end
   else
     redirect('/login')
   end
@@ -196,7 +200,7 @@ post('/register') do
       slim(:error)
     end
   else
-    slim(:start)
+    slim(:error)
   end
 end
 
@@ -204,18 +208,33 @@ get('/login') do
   slim(:login)
 end
 
+login_requests = {}
 post('/login') do
+
+  if login_requests[request.ip] != nil
+    if Time.now - login_requests[request.ip] < 10
+      return slim(:error)
+    end
+  end 
+
+  p login_requests[request.ip]
+  login_requests[request.ip] = Time.now
+
   username = params[:username]
   password = params[:password]
   result = get_data("users", "username", username)
-  pwdigest = result["pwdigest"]
-  id = result["id"]
-
-  if BCrypt::Password.new(pwdigest) == password
-    session[:id] = id
-    redirect('/')
-  else
+  if result == nil
     slim(:error)
+  else
+    pwdigest = result["pwdigest"]
+    id = result["id"]
+
+    if BCrypt::Password.new(pwdigest) == password
+      session[:id] = id
+      redirect('/')
+    else
+      slim(:error)
+    end
   end
 end
 
@@ -229,9 +248,9 @@ get('/user/saved_recipes') do
   slim(:your_recipes)
 end
 
-post('/user/saved_recipes/:id/remove') do
-  if session[:id] != nil
-    id = params[:id].to_i
+post('/user/saved_recipes/:id/delete') do
+  id = params[:id].to_i
+  if is_creator(session[:id], id)
     remove_recipe(session[:id], id)
     redirect('/user/saved_recipes')
   else

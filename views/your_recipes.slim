@@ -1,5 +1,5 @@
 - @result.each do |recipe|
     li 
       a href="/recipes_browse/recipe/#{recipe['id']}" #{recipe["name"]}
-      form action='/user/saved_recipes/#{recipe['id']}/remove' method='post'
+      form action='/user/saved_recipes/#{recipe['id']}/delete' method='post'
             input type='submit' value='Remove'

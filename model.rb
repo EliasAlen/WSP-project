@@ -6,14 +6,35 @@ def connect_to_db(database)
     return db
 end
 
+# Returns nil upon failure
 def create_recipe(user_id, name, difficulty, prep_time)
     db = connect_to_db("db/WSP-Project-vt_2024.db")
-    if db.execute("SELECT * FROM recipes WHERE name = ?", name).first == nil 
-        db.execute("INSERT INTO recipes (name, difficulty, prep_time, creator_id) VALUES (?, ?, ?, ?)", name, difficulty, prep_time.to_i, user_id)
+    if db.execute("SELECT * FROM recipes WHERE name = ?", name).first == nil && name != "" && prep_time.to_i.to_s == prep_time
+        if difficulty == "beginner" || difficulty == "intermediate" || difficulty == "advanced"
+            db.execute("INSERT INTO recipes (name, difficulty, prep_time, creator_id) VALUES (?, ?, ?, ?)", name, difficulty, prep_time.to_i, user_id)
+        else
+            nil
+        end
     else
-        slim(:error)
+        nil
     end
 end
+
+def correct_ingredient_format(ingredients)
+    
+    ingredient_amount_arr = ingredients.split(', ')
+    i = 0
+    while i < ingredient_amount_arr.length
+        temp_arr = ingredient_amount_arr[i].split(' ')
+        if temp_arr.length < 2 || temp_arr[0].to_i <= 0
+            return false
+        end
+        i += 1
+    end
+    return true
+end
+
+p correct_ingredient_format("1dl mjöl, 3dl socker, 2dl mjölk")
 
 def save_ingredient_info(ingredients, recipe_name)
     ingredient_ids = []
@@ -228,3 +249,5 @@ def username_occupied(username)
     db = connect_to_db("db/WSP-Project-vt_2024.db")
     return db.execute("SELECT * FROM users WHERE username = ?", username).first != nil
 end
+
+p get_data("users", "username", "gra")
